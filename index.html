@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BWISIOM · Todas mis redes</title>
+<meta name="description" content="BWISIOM: Quiz · Curiosidades · Misterio · IA · Gaming. YouTube, TikTok, Instagram, Twitch, Kick y X.">
+<meta name="theme-color" content="#0B0B10">
+<link rel="icon" href="img/logo.png">
+<link rel="apple-touch-icon" href="img/logo.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="BWISIOM · Todas mis redes">
+<meta property="og:description" content="Quiz · Curiosidades · Misterio · IA · Gaming">
+<meta property="og:url" content="https://bwisiom.github.io/">
+<meta property="og:image" content="https://bwisiom.github.io/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--morado:#6A00FF;--naranjo:#FF7A00;--negro:#0B0B10;--blanco:#FFFFFF;--gris:#B9B3CC}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--negro)}
+body{min-height:100vh;min-height:100dvh;background:var(--negro);color:var(--blanco);
+ font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.fondo{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.fondo i{position:absolute;border-radius:50%;filter:blur(80px)}
+.fondo .a{width:70vmax;height:70vmax;left:-25vmax;top:-30vmax;background:radial-gradient(var(--morado),transparent 65%);opacity:.55;animation:flota 14s ease-in-out infinite alternate}
+.fondo .b{width:55vmax;height:55vmax;right:-25vmax;bottom:-20vmax;background:radial-gradient(var(--naranjo),transparent 65%);opacity:.35;animation:flota 18s ease-in-out infinite alternate-reverse}
+.fondo .ruido{position:absolute;inset:0;opacity:.12;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.fondo .rejilla{position:absolute;left:-50%;right:-50%;bottom:-10%;height:45%;transform:perspective(600px) rotateX(70deg);transform-origin:bottom;
+ background-image:linear-gradient(rgba(106,0,255,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(106,0,255,.55) 1px,transparent 1px);background-size:60px 60px;
+ -webkit-mask-image:linear-gradient(to top,#000,transparent 80%);mask-image:linear-gradient(to top,#000,transparent 80%);opacity:.35}
+@keyframes flota{to{transform:translate(6vmax,4vmax) scale(1.08)}}
+main{position:relative;max-width:520px;margin:0 auto;padding:44px 16px 32px;display:flex;flex-direction:column;align-items:center}
+.avatar{position:relative;width:132px;height:132px}
+.avatar::before{content:"";position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(from 210deg,var(--naranjo),var(--morado),#fff,var(--morado),var(--naranjo));animation:gira 8s linear infinite;filter:drop-shadow(0 0 18px rgba(106,0,255,.7))}
+.avatar img.foto{position:relative;width:100%;height:100%;border-radius:50%;object-fit:cover;border:4px solid var(--negro)}
+.avatar img.logo{position:absolute;right:-6px;bottom:-4px;width:50px;height:50px;border-radius:50%;border:3px solid var(--negro);background:var(--negro)}
+@keyframes gira{to{transform:rotate(360deg)}}
+.marca{margin-top:18px;line-height:0}
+.marca svg{width:min(250px,70vw);height:auto}
+h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.lema{margin-top:6px;text-align:center;color:var(--gris);font-size:14.5px;line-height:1.5;max-width:380px}
+.lema b{color:var(--naranjo);font-weight:700}
+.vivo{margin-top:14px;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.06);
+ border:1px solid rgba(255,255,255,.12);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.vivo::before{content:"";width:8px;height:8px;border-radius:50%;background:#FF2A00;box-shadow:0 0 10px #FF2A00;animation:late 1.6s ease-in-out infinite}
+@keyframes late{50%{opacity:.35}}
+.lista{width:100%;margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.btn{position:relative;display:flex;align-items:center;gap:14px;min-height:64px;padding:10px 16px 10px 10px;border-radius:18px;text-decoration:none;color:var(--blanco);
+ background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+ border:1px solid rgba(255,255,255,.12);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent}
+.btn::after{content:"";position:absolute;inset:-1px;border-radius:19px;padding:1px;background:linear-gradient(110deg,var(--morado),var(--naranjo));
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .18s}
+.btn:hover,.btn:focus-visible{transform:translateY(-2px);box-shadow:0 10px 30px -10px rgba(106,0,255,.8);outline:none}
+.btn:hover::after,.btn:focus-visible::after{opacity:1}
+.btn:active{transform:scale(.98)}
+.chip{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center}
+.chip svg{width:24px;height:24px}
+.txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.txt b{font-size:16.5px;font-weight:700;letter-spacing:.01em}
+.txt small{font-size:13px;color:var(--gris);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flecha{font-size:26px;line-height:1;color:rgba(255,255,255,.5);transition:transform .18s,color .18s}
+.btn:hover .flecha{transform:translateX(3px);color:var(--naranjo)}
+.contacto{margin-top:6px;background:linear-gradient(110deg,var(--morado),#8B2BFF 45%,var(--naranjo));border:none}
+.contacto .chip{background:rgba(0,0,0,.28)}
+.contacto .txt small{color:rgba(255,255,255,.85)}
+.contacto .flecha{color:#fff}
+footer{margin-top:30px;text-align:center;font-size:12px;color:rgba(255,255,255,.45);line-height:1.7}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="fondo" aria-hidden="true"><i class="a"></i><i class="b"></i><div class="rejilla"></div><div class="ruido"></div></div>
+<main>
+  <div class="avatar"><img class="foto" src="img/foto.jpg" alt="Foto de BWISIOM" width="132" height="132"><img class="logo" src="img/logo.png" alt="Logo GOAT de BWISIOM" width="50" height="50"></div>
+  <h1>BWISIOM</h1>
+  <div class="marca" aria-hidden="true"><svg width="453" height="87" viewBox="0 0 648 125" xmlns="http://www.w3.org/2000/svg"><defs>
+  <linearGradient id="gPurple" x1="0" y1="0" x2="0.4" y2="1">
+    <stop offset="0" stop-color="#9B4DFF"/><stop offset="0.5" stop-color="#6A00FF"/>
+    <stop offset="1" stop-color="#3A0099"/></linearGradient>
+  <linearGradient id="gOrange" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFB04D"/><stop offset="0.5" stop-color="#FF7A00"/>
+    <stop offset="1" stop-color="#E05A00"/></linearGradient>
+  <linearGradient id="gChrome" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="0.55" stop-color="#F1E8FF"/>
+    <stop offset="1" stop-color="#D9C2FF"/></linearGradient>
+  <linearGradient id="gEdge" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/><stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.15"/>
+    <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+  <linearGradient id="gFrame" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#9B4DFF"/><stop offset="1" stop-color="#6A00FF"/></linearGradient>
+  <radialGradient id="gGlowP" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#6A00FF" stop-opacity="0.6"/><stop offset="1" stop-color="#6A00FF" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gGlowO" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#FF7A00" stop-opacity="0.45"/><stop offset="1" stop-color="#FF7A00" stop-opacity="0"/></radialGradient>
+  <filter id="fGlow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <pattern id="pGrid" width="64" height="64" patternUnits="userSpaceOnUse">
+    <path d="M64 0H0V64" fill="none" stroke="#FFFFFF" stroke-opacity="0.04" stroke-width="2"/></pattern>
+  <filter id="fMonoBlanco"><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0"/></filter>
+  <filter id="fMonoNegro"><feColorMatrix type="matrix" values="0 0 0 0 0.043  0 0 0 0 0.043  0 0 0 0 0.063  0 0 0 1 0"/></filter>
+</defs><g transform="translate(31.3 10.0) scale(1.00000) skewX(-12)"><g transform="translate(5 6)" opacity="0.9"><path transform="translate(0 0)" d="M0 0H66L80 14V38L70 50L80 62V86L66 100H0Z M24 21V40H56V21Z M24 60V79H56V60Z" fill="#6A00FF" fill-rule="evenodd"/><path transform="translate(92 0)" d="M0 0H24L36 62L48 0H72L84 62L96 0H120L98 100H74L60 40L46 100H22Z" fill="#6A00FF" fill-rule="evenodd"/><path transform="translate(224 0)" d="M0 0H24V100H0Z" fill="#6A00FF" fill-rule="evenodd"/><path transform="translate(260 0)" d="M14 0H80V22H24V39H66L80 53V86L66 100H0V78H56V61H14L0 47V14Z" fill="#6A00FF" fill-rule="evenodd"/><path transform="translate(352 0)" d="M0 0H24V100H0Z" fill="#6A00FF" fill-rule="evenodd"/><path transform="translate(388 0)" d="M14 0H70L84 14V86L70 100H14L0 86V14Z M24 24V76H60V24Z" fill="#6A00FF" fill-rule="evenodd"/><path transform="translate(484 0)" d="M0 100V0H26L52 46L78 0H104V100H80V44L58 82H46L24 44V100Z" fill="#6A00FF" fill-rule="evenodd"/></g><path transform="translate(0 0)" d="M0 0H66L80 14V38L70 50L80 62V86L66 100H0Z M24 21V40H56V21Z M24 60V79H56V60Z" fill="url(#gChrome)" fill-rule="evenodd"/><path transform="translate(92 0)" d="M0 0H24L36 62L48 0H72L84 62L96 0H120L98 100H74L60 40L46 100H22Z" fill="url(#gChrome)" fill-rule="evenodd"/><path transform="translate(224 0)" d="M0 0H24V100H0Z" fill="url(#gChrome)" fill-rule="evenodd"/><path transform="translate(260 0)" d="M14 0H80V22H24V39H66L80 53V86L66 100H0V78H56V61H14L0 47V14Z" fill="url(#gChrome)" fill-rule="evenodd"/><path transform="translate(352 0)" d="M0 0H24V100H0Z" fill="url(#gChrome)" fill-rule="evenodd"/><path transform="translate(388 0)" d="M14 0H70L84 14V86L70 100H14L0 86V14Z M24 24V76H60V24Z" fill="url(#gChrome)" fill-rule="evenodd"/><path transform="translate(484 0)" d="M0 100V0H26L52 46L78 0H104V100H80V44L58 82H46L24 44V100Z" fill="url(#gChrome)" fill-rule="evenodd"/></g></svg></div>
+  <p class="lema">Quiz · Curiosidades · Misterio · IA · <b>Gaming</b><br>Desde el norte de Chile</p>
+  <span class="vivo">Directos en Twitch y Kick</span>
+  <nav class="lista" aria-label="Redes de BWISIOM">
+      <a class="btn" href="https://www.youtube.com/@bwisiomvideos" target="_blank" rel="noopener" data-red="youtube">
+        <span class="chip" style="background:#FF0000;"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFFFFF" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+        <span class="txt"><b>YouTube</b><small>BwisiomVideos</small></span>
+        <span class="flecha" aria-hidden="true">›</span>
+      </a>
+      <a class="btn" href="https://www.tiktok.com/@bwisiom" target="_blank" rel="noopener" data-red="tiktok">
+        <span class="chip" style="background:#000000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFFFFF" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span>
+        <span class="txt"><b>TikTok</b><small>@bwisiom</small></span>
+        <span class="flecha" aria-hidden="true">›</span>
+      </a>
+      <a class="btn" href="https://www.instagram.com/bwisiom/" target="_blank" rel="noopener" data-red="instagram">
+        <span class="chip" style="background:#E4405F;"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFFFFF" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></span>
+        <span class="txt"><b>Instagram</b><small>@bwisiom</small></span>
+        <span class="flecha" aria-hidden="true">›</span>
+      </a>
+      <a class="btn" href="https://www.twitch.tv/bwisiom" target="_blank" rel="noopener" data-red="twitch">
+        <span class="chip" style="background:#9146FF;"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFFFFF" d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg></span>
+        <span class="txt"><b>Twitch</b><small>Bwisiom · directos</small></span>
+        <span class="flecha" aria-hidden="true">›</span>
+      </a>
+      <a class="btn" href="https://kick.com/bwisiom" target="_blank" rel="noopener" data-red="kick">
+        <span class="chip" style="background:#53FC18;"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#000000" d="M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z"/></svg></span>
+        <span class="txt"><b>Kick</b><small>Bwisiom · directos</small></span>
+        <span class="flecha" aria-hidden="true">›</span>
+      </a>
+      <a class="btn" href="https://x.com/BWISIOM" target="_blank" rel="noopener" data-red="x">
+        <span class="chip" style="background:#000000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFFFFF" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></span>
+        <span class="txt"><b>X</b><small>@BWISIOM</small></span>
+        <span class="flecha" aria-hidden="true">›</span>
+      </a>
+      <a class="btn contacto" href="mailto:bwisiom@hotmail.com">
+        <span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5zm2.3-.5 7.7 6.2L19.7 5zM20 6.9l-7.4 6a1 1 0 0 1-1.2 0L4 6.9v11.6c0 .3.2.5.5.5h15c.3 0 .5-.2.5-.5z"/></svg></span>
+        <span class="txt"><b>Contacto y colaboraciones</b><small>bwisiom@hotmail.com</small></span>
+        <span class="flecha" aria-hidden="true">›</span>
+      </a>
+  </nav>
+  <footer>© BWISIOM · bwisiom.github.io</footer>
+</main>
+</body>
+</html>
