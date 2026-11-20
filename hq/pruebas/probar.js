@@ -12,6 +12,7 @@ const OUT = process.argv[2] || path.join(__dirname, "capturas");
 process.on("unhandledRejection", () => {});
 fs.mkdirSync(OUT, { recursive: true });
 const iso = d => new Date(Date.now() + d * 864e5).toISOString();
+const dk = d => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Santiago" }).format(new Date(Date.now() + d * 864e5));
 const SEED = {
   "videos/C-9001": { codigo: "C-9001", titulo: "Video de prueba publicado", etapa: "publicado", categoria: "gaming", gancho: "PRUEBA", orden: 0,
     plataformas: { youtube: { estado: "subido", fecha: iso(-1), titulo: "Video de prueba", hashtags: "#prueba #test", url: "https://example.com" }, x: { estado: "listo", descripcion: "Texto X" }, tiktok: { estado: "programado", fecha: iso(2) } } },
@@ -21,6 +22,7 @@ const SEED = {
   "tareas/t-venc": { titulo: "Tarea vencida de prueba", prioridad: "alta", estado: "pendiente", fecha_limite: iso(-1), creado: iso(-3) },
   "meta/info": { actualizado: "hoy (prueba)", nota_videos: "Nota de prueba de videos." },
   "meta/config": { redes: ["youtube", "tiktok", "instagram", "x"] },
+  "meta/feriados": { fuente: "prueba", lista: [{ fecha: dk(1), nombre: "Feriado prueba día" }, { fecha: dk(13), nombre: "Feriado prueba noche" }, { fecha: dk(5), nombre: "Feriado en descanso" }] },
 };
 const results = []; const ok = (name, cond, extra = "") => { results.push([cond ? "OK " : "FALLA", name, extra]); };
 const errors = [];
@@ -128,6 +130,10 @@ const shot = (p, n) => p.screenshot({ path: path.join(OUT, n + ".png"), fullPage
     await p.fill("#f_tu_inicio", d0); await p.click("#tuSave");
     await p.waitForSelector("text=Turno día · día 3 de 7 · 08:00–20:00");
     ok(T + "Turnos 7x7 calculados (día, horario)", true);
+    // inicio = hace 2 días (día). dk(1) = turno día (12 h). dk(13) = noche: turnos que empiezan dk(12) [00–08] y dk(13) [20–24] = 12 h. dk(5) = descanso.
+    ok(T + "Feriado en turno día: 12 h", await p.locator(".item", { hasText: "Feriado prueba día" }).locator("text=12 h").first().isVisible());
+    ok(T + "Feriado en turno noche: suma 00–08 y 20–24 (12 h)", await p.locator(".item", { hasText: "Feriado prueba noche" }).locator("text=12 h").first().isVisible());
+    ok(T + "Feriado en descanso no se cuenta", !(await p.locator(".list .item", { hasText: "Feriado en descanso" }).locator(".pill").count()));
     ok(T + "Turnos alternan: próximo bloque es noche 20:00–08:00", await p.locator(".item", { hasText: "Entra turno noche" }).first().locator("text=20:00–08:00").isVisible());
     await p.click("[data-sub='calendario:mes']");
     ok(T + "Vista mensual con días de turno", (await p.locator(".month button.work").count()) >= 7);

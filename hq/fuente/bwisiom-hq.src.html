@@ -272,7 +272,9 @@ fieldset.red legend{padding:0 6px;font-weight:700}
 .month .dn{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
 .month .dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center}
 .month .dots i{width:5px;height:5px;border-radius:50%}
-.k-tarea{background:var(--warn)} .k-iacc{background:var(--lila)} .k-evento{background:var(--info)} .k-pub{background:var(--yt)} .k-gcal{background:var(--ok)} .k-turno{background:var(--naranjo)}
+.k-tarea{background:var(--warn)} .k-iacc{background:var(--lila)} .k-evento{background:var(--info)} .k-pub{background:var(--yt)} .k-gcal{background:var(--ok)} .k-turno{background:var(--naranjo)} .k-feriado{background:var(--crit)}
+.month button.fer .dn{color:var(--crit)} .month button.ferw{box-shadow:inset 0 0 0 2px var(--crit)}
+.dayh .fer{font-size:10.5px;color:var(--crit);border:1px solid var(--crit);border-radius:5px;padding:1px 6px}
 .legend{display:flex;gap:10px 14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:10px 0}
 .legend span{display:inline-flex;align-items:center;gap:5px} .legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .dayh{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--lila);margin:16px 0 6px;display:flex;align-items:center;gap:8px}
@@ -492,7 +494,7 @@ function proximas(dias){const lim=Date.now()+dias*864e5,now=Date.now(),out=[];
   S.videos.forEach(v=>Object.entries(v.plataformas||{}).forEach(([p,i])=>{if(i.estado==="programado"&&i.fecha){const x=new Date(i.fecha).getTime();if(x>=now-36e5&&x<=lim)out.push({k:"pub",t:(i.titulo||v.titulo),f:i.fecha,s:"Publicación programada · "+nm(p),go:()=>go("contenido","videos")})}}));
   (S.gcal?.items||[]).forEach(e=>{const x=new Date(e.f).getTime();if(x>=now-36e5&&x<=lim)out.push({k:"gcal",t:e.t,f:e.f,s:"Google Calendar",go:null})});
   return out.sort((a,b)=>new Date(a.f)-new Date(b.f))}
-const KCOL={tarea:"var(--warn)",iacc:"var(--lila)",evento:"var(--info)",pub:"var(--yt)",gcal:"var(--ok)",turno:"var(--naranjo)"};
+const KCOL={tarea:"var(--warn)",iacc:"var(--lila)",evento:"var(--info)",pub:"var(--yt)",gcal:"var(--ok)",turno:"var(--naranjo)",feriado:"var(--crit)"};
 function agItem(x,i){return `<button class="ag" data-ag="${i}"><span class="k" style="background:${KCOL[x.k]}"></span><span class="tm">${x.allDay?"Todo<br>el día":esc(fmtT(x.f))}</span><span class="b"><span class="t">${esc(x.t)}</span><br><span class="s">${esc(x.s)}</span></span></button>`}
 let AG=[];function bindAg(){$$("[data-ag]").forEach(b=>b.onclick=()=>{const x=AG[+b.dataset.ag];x&&x.go&&x.go()})}
 function pcInfo(){const e=S.pcEstado;if(!e)return{c:"off",t:S.pcCfg?.sesion_id?"Sin datos del agente":"No configurado",s:S.pcCfg?.sesion_id?"El PC aún no envía su estado":"Configura el agente del PC"};
@@ -521,7 +523,7 @@ VIEWS.inicio=()=>{const nd=needData();if(nd)return `<h1 class="vt">Centro de con
     <button class="kpi" data-go="contenido"><div class="lab">Listos para subir</div><div class="val">${L.length}</div><div class="det">${L.length?esc(L.map(x=>x.v.codigo+" "+nm(x.p)).slice(0,3).join(" · ")):"Nada pendiente"}</div></button>
     <button class="kpi" data-go="contenido" data-sub="redes"><div class="lab">Publicados</div><div class="val">${U.length}</div><div class="det">${U.length?esc([...new Set(U.map(x=>nm(x.p)))].join(", ")):"—"}</div></button>
     <button class="kpi" data-go="contenido" data-sub="clips"><div class="lab">Clips del PC</div><div class="val">${S.clips.length}</div><div class="det">${S.clips.length?S.clips.filter(c=>c.estado==="revision"||c.estado==="editado").length+" por revisar":"Sin sincronizar todavía"}</div></button>
-    <button class="kpi" data-go="comando"><div class="lab">Comandos</div><div class="val">${S.comandos.filter(c=>["pendiente","ejecutando","esperando_pc"].includes(c.estado)).length}</div><div class="det">en curso · ${S.comandos.filter(c=>c.estado==="fallido").length} fallidos</div></button>
+    ${(()=>{const hk=dayKey(Date.now()),f=feriadosTrabajados(hk,addDays(hk,400))[0];return `<button class="kpi" data-go="calendario" data-sub="turnos"><div class="lab">💰 Feriado en turno</div><div class="val">${f?(()=>{const d=Math.round((new Date(f.fecha+"T12:00:00")-new Date(hk+"T12:00:00"))/864e5);return d===0?"HOY":d+(d===1?" día":" días")})():"—"}</div><div class="det">${f?esc(f.nombre+" · "+fmtD(f.fecha+"T12:00:00")+" · "+f.horas+" h"):S.turnos?.inicio?"Ninguno próximo":"Configura tus turnos"}</div></button>`})()}
   </div>
   <h2>Próximas actividades <span class="n">7 días</span><button class="btn sm act" data-go="calendario">Ver calendario</button></h2>
   ${AG.length?AG.map(agItem).join(""):`<div class="empty">Nada en los próximos 7 días.</div>`}
@@ -828,7 +830,8 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-ed]");if(b
 /* Turnos: ciclo trabajo/descanso; con "alterna", los bloques de trabajo se turnan día ↔ noche. */
 const TIPO_T={dia:"Día",noche:"Noche"};
 function turnoDe(d){const t=S.turnos;if(!t?.inicio)return null;const a=new Date(t.inicio+"T12:00:00"),b=new Date(dayKey(d)+"T12:00:00");const T=+(t.dias_trabajo||7),D=+(t.dias_descanso||7),C=T+D;
-  const diff=Math.round((b-a)/864e5),m=((diff%C)+C)%C,n=Math.floor(diff/C);const otro=x=>x==="noche"?"dia":"noche";
+  const diff=Math.round((b-a)/864e5);if(diff<0)return null; /* antes de la fecha de referencia no se inventan turnos */
+  const m=diff%C,n=Math.floor(diff/C);const otro=x=>x==="noche"?"dia":"noche";
   const tipoN=k=>t.alterna?(((k%2)+2)%2===0?(t.primer_tipo||"dia"):otro(t.primer_tipo||"dia")):null;
   const hor=x=>x==="noche"?(t.horario_noche||"20:00–08:00"):x==="dia"?(t.horario_dia||"08:00–20:00"):(t.horario||"");
   if(m<T){const tipo=tipoN(n);return{trabajo:true,dia:m+1,de:T,tipo,horario:hor(tipo)}}const sig=tipoN(n+1);return{trabajo:false,dia:m-T+1,de:D,siguiente:sig,horario_sig:hor(sig)}}
@@ -838,12 +841,24 @@ function turnoHoyTxt(){const t=turnoDe(Date.now());if(!t)return"Turno 7x7 sin co
   return `Descanso: día ${t.dia} de ${t.de}${t.siguiente?" · luego turno "+(t.siguiente==="noche"?"noche":"día"):""}`}
 const horaIni=h=>{const m=String(h||"").match(/(\d{1,2}):(\d{2})/);return m?[+m[1],+m[2]]:null};
 const horaFin=h=>{const m=String(h||"").match(/\d{1,2}:\d{2}\D+(\d{1,2}):(\d{2})/);return m?[+m[1],+m[2]]:null};
+/* Feriados (lista en meta/feriados, editable). Calcula cuántas horas de cada turno caen en un feriado. */
+const addDays=(k,n)=>{const d=new Date(k+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const FER=()=>Object.fromEntries((S.feriados?.lista||[]).map(f=>[f.fecha,f]));
+const turnoK=k=>{const[y,m,d]=k.split("-").map(Number);return turnoDe(zonedISO(y,m,d,12,0))};
+function horasFerTurno(dk,tu,F){const hi=horaIni(tu.horario)||[8,0],hf=horaFin(tu.horario)||[20,0];let a0=hi[0]*60+hi[1],b0=hf[0]*60+hf[1];if(b0<=a0)b0+=1440;const out=[];
+  for(const off of [0,1]){const k=addDays(dk,off),f=F[k];if(!f)continue;const a=Math.max(a0,off*1440),b=Math.min(b0,(off+1)*1440);if(b>a)out.push({fecha:k,nombre:f.nombre,horas:(b-a)/60,desde:a-off*1440,hasta:b-off*1440,tipo:tu.tipo,turno:dk})}return out}
+const mm2h=m=>String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+function ferEnTurno(fk,F){F=F||FER();const out=[];for(const dk of [addDays(fk,-1),fk]){const tu=turnoK(dk);if(tu?.trabajo)horasFerTurno(dk,tu,F).filter(x=>x.fecha===fk).forEach(x=>out.push(x))}return out}
+function feriadosTrabajados(desdeK,hastaK){const F=FER();return (S.feriados?.lista||[]).filter(f=>f.fecha>=desdeK&&f.fecha<=hastaK).sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(f=>({...f,tramos:ferEnTurno(f.fecha,F)})).filter(f=>f.tramos.length).map(f=>({...f,horas:f.tramos.reduce((s,x)=>s+x.horas,0)}))}
+const tramoTxt=x=>(x.tipo==="noche"?"🌙 Noche":x.tipo==="dia"?"☀️ Día":"Turno")+" "+mm2h(x.desde)+"–"+(x.hasta===1440?"24:00":mm2h(x.hasta))+" ("+x.horas+" h)";
 function calItems(from,to){const out=[],a=from.getTime(),b=to.getTime(),inR=f=>{const x=new Date(f).getTime();return x>=a&&x<b};
   S.tareas.forEach(t=>{if(t.fecha_limite&&inR(t.fecha_limite))out.push({k:"tarea",t:t.titulo,f:t.fecha_limite,s:(t.estado==="completada"?"Completada · ":tareaVencida(t)?"Vencida · ":"Tarea · ")+lab(PRIOS,t.prioridad||"media"),go:()=>openTarea(t._id)})});
   S.estudios.forEach(e=>{if(e.cierre&&inR(e.cierre))out.push({k:"iacc",t:e.asignatura+" · "+e.titulo,f:e.cierre,s:"IACC · "+lab(EST_EV,e.estado)+(e.peso?" · "+e.peso:""),go:()=>S.canEdit?openEd("estudios",e._id):go("calendario","estudios")})});
   S.eventos.forEach(e=>{if(e.inicio&&inR(e.inicio))out.push({k:"evento",t:e.titulo,f:e.inicio,allDay:e.todo_el_dia,s:lab(TIPO_EV,e.tipo||"personal")+(e.fin?" · hasta "+fmtT(e.fin):""),go:()=>openEvento(e._id)})});
   S.videos.forEach(v=>Object.entries(v.plataformas||{}).forEach(([p,i])=>{if(i.fecha&&["programado","subido"].includes(i.estado)&&inR(i.fecha))out.push({k:"pub",t:(v.codigo?v.codigo+" · ":"")+(i.titulo||v.titulo),f:i.fecha,s:(i.estado==="subido"?"Publicado":"Programado")+" · "+nm(p),go:()=>go("contenido","videos")})}));
   (S.gcal?.items||[]).forEach(e=>{if(inR(e.f))out.push({k:"gcal",t:e.t,f:e.f,allDay:e.allDay,s:"Google Calendar"+(e.loc?" · "+e.loc:""),go:null})});
+  const F=FER();Object.values(F).forEach(f=>{const[y,mo,dd]=f.fecha.split("-").map(Number);const fi=zonedISO(y,mo,dd,0,0);if(!inR(fi))return;const tr=ferEnTurno(f.fecha,F),h=tr.reduce((s,x)=>s+x.horas,0);
+    out.push({k:"feriado",t:"Feriado: "+f.nombre+(f.irrenunciable?" (irrenunciable)":""),f:fi,allDay:true,s:tr.length?"💰 Trabajas "+h+" h en feriado · "+tr.map(tramoTxt).join(" + "):"No te toca turno",go:()=>go("calendario","turnos")})});
   if(S.turnos?.inicio)for(let x=from.getTime()+43200000;x<b;x+=864e5){const tu=turnoDe(x);if(!tu?.trabajo)continue;const k=dayKey(x),hi=horaIni(tu.horario)||[8,0];const[y,mo,dd]=k.split("-").map(Number);const f=zonedISO(y,mo,dd,hi[0],hi[1]);
     if(inR(f))out.push({k:"turno",t:"Turno "+(tu.tipo?(tu.tipo==="noche"?"noche":"día"):"")+(tu.horario?" · "+tu.horario:""),f,s:"Día "+tu.dia+" de "+tu.de+(S.turnos.lugar?" · "+S.turnos.lugar:"")+(tu.tipo==="noche"?" · sales al día siguiente":""),go:()=>go("calendario","turnos")})}
   return out.sort((x,y)=>new Date(x.f)-new Date(y.f))}
@@ -853,16 +868,16 @@ VIEWS.calendario=()=>{const nd=needData();const s=S.sub.calendario||"agenda";
   ${({agenda:cAgenda,mes:cMes,estudios:cEstudios,turnos:cTurnos}[s]||cAgenda)()}`};
 function gcalNote(){if(!S.mcp)return `<p class="small dim">Google Calendar: no disponible en esta vista.</p>`;if(!S.gcal)return `<p class="small dim">Leyendo Google Calendar…</p>`;if(S.gcal.err)return `<p class="small" style="color:var(--warn)">Google Calendar: ${esc(S.gcal.err)} <button class="btn sm" id="gcRe">Reintentar</button></p>`;return `<p class="small dim">Google Calendar: ${S.gcal.items.length} eventos leídos ${esc(rel(S.gcal.at))}. <button class="btn sm ghost" id="gcRe">${ic("refresh")} Actualizar</button></p>`}
 function cAgenda(){const from=new Date(dayKey(Date.now())+"T00:00:00"),to=new Date(from.getTime()+31*864e5);const items=calItems(from,to);AG=items;const G={};items.forEach((x,i)=>(G[dayKey(x.f)]||=[]).push([x,i]));
-  const days=[];for(let i=0;i<31;i++){const d=new Date(from.getTime()+i*864e5+43200000);const k=dayKey(d);const tu=turnoDe(d);if(G[k]||i===0||(tu&&tu.dia===1))days.push([k,d,tu])}
-  return gcalNote()+days.map(([k,d,tu])=>`<div class="dayh">${esc(d.toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"short",timeZone:TZ}))}${k===dayKey(Date.now())?" · hoy":""}${tu?`<span class="turno">${esc(turnoLbl(tu))}</span>`:""}</div>${(G[k]||[]).map(([x,i])=>agItem(x,i)).join("")||`<div class="small dim" style="padding:4px 2px">Sin actividades.</div>`}`).join("")}
+  const days=[];for(let i=0;i<31;i++){const d=new Date(from.getTime()+i*864e5+43200000);const k=dayKey(d);const tu=turnoDe(d);if(G[k]||i===0||(tu&&tu.dia===1))days.push([k,d,tu])}const FF=FER();
+  return gcalNote()+days.map(([k,d,tu])=>`<div class="dayh">${esc(d.toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"short",timeZone:TZ}))}${k===dayKey(Date.now())?" · hoy":""}${tu?`<span class="turno">${esc(turnoLbl(tu))}</span>`:""}${FF[k]?`<span class="fer">Feriado</span>`:""}</div>${(G[k]||[]).map(([x,i])=>agItem(x,i)).join("")||`<div class="small dim" style="padding:4px 2px">Sin actividades.</div>`}`).join("")}
 function cMes(){const base=S.cal.m||dayKey(Date.now()).slice(0,7);const[y,m]=base.split("-").map(Number);const first=new Date(y,m-1,1,12),dim=new Date(y,m,0).getDate(),lead=(first.getDay()+6)%7;
   const from=new Date(y,m-1,1-lead),to=new Date(y,m-1,dim+(42-lead-dim)+1);const items=calItems(from,to);const G={};items.forEach(x=>(G[dayKey(x.f)]||=[]).push(x));
-  const selK=S.cal.sel||dayKey(Date.now());let cells="";for(let i=0;i<42;i++){const d=new Date(y,m-1,1-lead+i,12),k=dayKey(d),tu=turnoDe(d),ks=[...new Set((G[k]||[]).map(x=>x.k))];
-    cells+=`<button data-day="${k}" class="${d.getMonth()!==m-1?"o ":""}${k===dayKey(Date.now())?"td ":""}${k===selK?"sel ":""}${tu&&tu.trabajo?"work"+(tu.tipo==="noche"?" night":""):""}"><span class="dn">${d.getDate()}</span><span class="dots">${ks.map(x=>`<i class="k-${x}"></i>`).join("")}</span></button>`}
+  const FF=FER();const selK=S.cal.sel||dayKey(Date.now());let cells="";for(let i=0;i<42;i++){const d=new Date(y,m-1,1-lead+i,12),k=dayKey(d),tu=turnoDe(d),ks=[...new Set((G[k]||[]).map(x=>x.k))];
+    cells+=`<button data-day="${k}" class="${d.getMonth()!==m-1?"o ":""}${k===dayKey(Date.now())?"td ":""}${k===selK?"sel ":""}${tu&&tu.trabajo?"work"+(tu.tipo==="noche"?" night":""):""}${FF[k]?" fer"+(ferEnTurno(k,FF).length?" ferw":""):""}"><span class="dn">${d.getDate()}</span><span class="dots">${ks.map(x=>`<i class="k-${x}"></i>`).join("")}</span></button>`}
   const dayItems=(G[selK]||[]);AG=dayItems;const tuS=turnoDe(new Date(selK+"T12:00:00"));
   return gcalNote()+`<div class="mhead"><button class="ibtn" data-mm="-1" aria-label="Mes anterior">${ic("left")}</button><div class="mt">${esc(first.toLocaleDateString("es-CL",{month:"long",year:"numeric"}))}</div><button class="ibtn" data-mm="1" aria-label="Mes siguiente">${ic("right")}</button></div>
   <div class="month">${["L","M","M","J","V","S","D"].map(d=>`<div class="wd">${d}</div>`).join("")}${cells}</div>
-  <div class="legend"><span><i class="k-tarea"></i>Tareas</span><span><i class="k-iacc"></i>IACC</span><span><i class="k-evento"></i>Eventos</span><span><i class="k-pub"></i>Publicaciones</span><span><i class="k-gcal"></i>Google</span><span><i class="k-turno" style="border-radius:2px;height:3px;width:12px"></i>Turno día</span><span><i style="border-radius:2px;height:3px;width:12px;background:var(--info)"></i>Turno noche</span></div>
+  <div class="legend"><span><i class="k-tarea"></i>Tareas</span><span><i class="k-iacc"></i>IACC</span><span><i class="k-evento"></i>Eventos</span><span><i class="k-pub"></i>Publicaciones</span><span><i class="k-gcal"></i>Google</span><span><i class="k-turno" style="border-radius:2px;height:3px;width:12px"></i>Turno día</span><span><i style="border-radius:2px;height:3px;width:12px;background:var(--info)"></i>Turno noche</span><span><i class="k-feriado"></i>Feriado (borde rojo: en turno)</span></div>
   <div class="dayh">${esc(new Date(selK+"T12:00:00").toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"long"}))}${tuS?`<span class="turno">${esc(turnoLbl(tuS))}</span>`:""}</div>
   ${dayItems.map(agItem).join("")||`<div class="empty">Sin actividades este día.</div>`}${S.canEdit?`<button class="btn wide" style="margin-top:10px" id="evDay">${ic("plus")} Agregar evento este día</button>`:""}`}
 function cEstudios(){if(!S.got.estudios)return `<div class="empty">Cargando estudios…</div>`;const now=Date.now();
@@ -876,13 +891,25 @@ function cEstudios(){if(!S.got.estudios)return `<div class="empty">Cargando estu
   <div class="tl">${ev.map(e=>{const t=new Date(e.cierre).getTime(),done=["entregado","calificado"].includes(e.estado),past=t<now&&done,urg=!done&&t>now&&t-now<7*864e5,d=dia(e.cierre);
     return `<div class="ev${past?" past":""}${urg?" urgent":""}"><div class="d">${d.n}<small>${esc(d.m)}</small></div><div class="x"><div class="t">${esc(e.asignatura)} · ${esc(e.titulo)}${e.peso?` <span class="code">${esc(e.peso)}</span>`:""}</div><div class="a">${esc(e.accion||"")}${e.nota?" · Nota "+esc(e.nota):""}</div></div><div class="rt"><span class="pill s-${esc(e.estado)}">${esc(lab(EST_EV,e.estado))}</span>${editBtn("estudios",e._id)}</div></div>`}).join("")||`<div class="empty">Sin evaluaciones.</div>`}</div>
   <p class="small dim" style="margin-top:12px">${esc(S.meta?.nota_estudios||"")}</p>`}
+function ferSection(){const hoyK=dayKey(Date.now()),y=hoyK.slice(0,4),lista=S.feriados?.lista||[];
+  if(!lista.length)return `<h2>Feriados en turno</h2><div class="cfg"><div class="h">Pendiente</div>No hay lista de feriados cargada.</div>`;
+  const prox=feriadosTrabajados(hoyK,addDays(hoyK,400)),anio=feriadosTrabajados(y+"-01-01",y+"-12-31"),hechos=anio.filter(f=>f.fecha<hoyK),hA=anio.reduce((s,f)=>s+f.horas,0);
+  const ultimo=lista.map(f=>f.fecha).sort().pop();
+  return `<h2>💰 Feriados en turno</h2>
+  <div class="grid g2"><div class="kpi okc"><div class="lab">En ${y}</div><div class="val">${anio.length}</div><div class="det">${hA} h en feriado · ${hechos.length} ya trabajados</div></div>
+  <div class="kpi hot"><div class="lab">Próximo</div><div class="val">${prox[0]?esc(fmtD(prox[0].fecha+"T12:00:00")):"—"}</div><div class="det">${prox[0]?esc(prox[0].nombre)+" · "+prox[0].horas+" h":"Ninguno en la lista"}</div></div></div>
+  <div class="list" style="margin-top:10px">${prox.map(f=>`<div class="item"><span class="pill" style="color:var(--crit)">${f.horas} h</span><div class="b"><div class="t">${esc(fmtD(f.fecha+"T12:00:00"))} · ${esc(f.nombre)}${f.irrenunciable?' <span class="tag">irrenunciable</span>':""}</div><div class="m">${f.tramos.map(x=>esc(tramoTxt(x))+(x.turno!==f.fecha?" (turno que empieza el "+esc(fmtD(x.turno+"T12:00:00"))+")":"")).join(" · ")}</div></div></div>`).join("")||`<div class="empty">Ningún feriado de la lista cae en tus turnos.</div>`}</div>
+  <p class="small dim" style="margin-top:8px">Incluye las horas de turno noche que pasan la medianoche hacia un feriado. La app solo registra fechas y horas: cuánto se paga depende de tu contrato o convenio. Lista cargada hasta ${esc(fmtD(ultimo+"T12:00:00"))}${S.feriados?.fuente?" · "+esc(S.feriados.fuente):""}.</p>
+  <details class="more"><summary>Ver y editar la lista de feriados (${lista.length})</summary><div class="list" style="margin-top:8px">${[...lista].sort((a,b)=>a.fecha.localeCompare(b.fecha)).filter(f=>f.fecha>=y+"-01-01").map(f=>`<div class="item"><div class="b"><div class="t" style="font-weight:600">${esc(fmtD(f.fecha+"T12:00:00"))} · ${esc(f.nombre)}</div><div class="m">${f.irrenunciable?"Irrenunciable · ":""}${f.propio?"Agregado por ti":"Nacional"}</div></div>${S.canEdit?`<button class="btn sm ghost" data-ferdel="${esc(f.fecha)}">Quitar</button>`:""}</div>`).join("")}</div>
+  ${S.canEdit?`<div class="fgrid" style="margin-top:10px">${inp("fer_fecha","Fecha","","date")}${inp("fer_nombre","Nombre (ej. elección, feriado regional)","")}</div><button class="btn" id="ferAdd" style="margin-top:8px">${ic("plus")} Agregar feriado</button>`:""}</details>`}
 function cTurnos(){const t=S.turnos||{};const prox=[];if(t.inicio){for(let i=0;i<90&&prox.length<6;i++){const d=new Date(Date.now()+i*864e5),tu=turnoDe(d);if(tu&&tu.dia===1&&i>0||(i===0&&tu&&tu.dia===1))prox.push([d,tu])}}
   const hoy=turnoDe(Date.now());
   return `${t.inicio?`<div class="card"><div class="eyebrow">Hoy${t.lugar?" · "+esc(t.lugar):""}</div><div style="font-family:var(--display);font-style:italic;font-size:24px;margin:4px 0">${esc(turnoHoyTxt())}</div>
     <div class="small muted">Ciclo ${esc(t.dias_trabajo||7)}x${esc(t.dias_descanso||7)}${t.alterna?" alternando día y noche":""} · bloque de referencia desde ${esc(fmtD(t.inicio+"T12:00:00"))}${t.alterna?" ("+(t.primer_tipo==="noche"?"noche":"día")+")":""}</div>
     ${t.alterna?`<div class="small muted" style="margin-top:6px">☀️ Día: ${esc(t.horario_dia||"08:00–20:00")} · 🌙 Noche: ${esc(t.horario_noche||"20:00–08:00")}</div>`:""}
     ${hoy&&hoy.trabajo&&hoy.tipo==="noche"?`<div class="small" style="color:var(--info);margin-top:6px">Turno noche: entras a las ${esc((t.horario_noche||"20:00–08:00").split(/[–-]/)[0])} y sales a la mañana siguiente.</div>`:""}</div>
-    <h2>Próximos cambios</h2><div class="list">${prox.map(([d,tu])=>`<div class="item"><span class="pill" style="color:${tu.trabajo?(tu.tipo==="noche"?"var(--info)":"var(--naranjo)"):"var(--ok)"}">${tu.trabajo?(tu.tipo?"Entra turno "+(tu.tipo==="noche"?"noche":"día"):"Entra a trabajar"):"Comienza descanso"}</span><div class="b"><div class="t">${esc(fmtD(d.toISOString()))}</div><div class="m">${tu.trabajo?esc(tu.horario||"")+" · "+tu.de+" turnos":tu.de+" días de descanso"+(tu.siguiente?" · después turno "+(tu.siguiente==="noche"?"noche":"día"):"")}</div></div></div>`).join("")}</div>`
+    <h2>Próximos cambios</h2><div class="list">${prox.map(([d,tu])=>`<div class="item"><span class="pill" style="color:${tu.trabajo?(tu.tipo==="noche"?"var(--info)":"var(--naranjo)"):"var(--ok)"}">${tu.trabajo?(tu.tipo?"Entra turno "+(tu.tipo==="noche"?"noche":"día"):"Entra a trabajar"):"Comienza descanso"}</span><div class="b"><div class="t">${esc(fmtD(d.toISOString()))}</div><div class="m">${tu.trabajo?esc(tu.horario||"")+" · "+tu.de+" turnos":tu.de+" días de descanso"+(tu.siguiente?" · después turno "+(tu.siguiente==="noche"?"noche":"día"):"")}</div></div></div>`).join("")}</div>
+    ${ferSection()}`
    :`<div class="cfg"><div class="h">Pendiente de configuración</div>Para mostrar tus turnos 7x7 en el calendario necesito <b>el primer día de cualquier bloque de trabajo</b> (por ejemplo, el día en que entraste a tu último turno). No invento la fecha.</div>`}
   ${S.canEdit?`<h2>Configurar turnos</h2><div class="card"><div class="fgrid">${inp("tu_inicio","Primer día de un bloque de trabajo",t.inicio||"","date")}${sel("tu_primer","Ese bloque es de",[["dia","Día"],["noche","Noche"]],t.primer_tipo||"dia")}
     ${sel("tu_alt","Los bloques se alternan día ↔ noche",[["1","Sí"],["0","No (siempre igual)"]],t.alterna===false||(!t.alterna&&t.inicio&&!t.horario_dia)?"0":"1")}${inp("tu_lugar","Lugar / faena",t.lugar||"")}
@@ -891,6 +918,9 @@ function cTurnos(){const t=S.turnos||{};const prox=[];if(t.inicio){for(let i=0;i
 after.calendario=()=>{bindAg();$$("[data-mm]").forEach(b=>b.onclick=()=>{const base=S.cal.m||dayKey(Date.now()).slice(0,7);const[y,m]=base.split("-").map(Number);const d=new Date(y,m-1+Number(b.dataset.mm),1);S.cal.m=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");loadGcal(true);render()});
   $$("[data-day]").forEach(b=>b.onclick=()=>{S.cal.sel=b.dataset.day;render()});$("#evDay")&&($("#evDay").onclick=()=>openEvento(null,S.cal.sel||dayKey(Date.now())));$("#gcRe")&&($("#gcRe").onclick=()=>loadGcal(true,true));
   const c=$("#count");if(c)tick(c.dataset.iso);
+  const saveFer=async(lista,acc,det)=>{if(!guard())return;await S.db.doc("meta/feriados").set({...(S.feriados||{}),lista,actualizado:nowISO(),dispositivo:DEV()});log(acc,det)};
+  $("#ferAdd")&&($("#ferAdd").onclick=async()=>{const f=val("fer_fecha"),n=val("fer_nombre");if(!f||!n){toast("Indica fecha y nombre",true);return}const l=(S.feriados?.lista||[]).filter(x=>x.fecha!==f);l.push({fecha:f,nombre:n.slice(0,80),propio:true});try{await saveFer(l,"Feriado agregado",f+" "+n);toast("Feriado agregado")}catch(e){toast("No se pudo guardar",true)}});
+  $$("[data-ferdel]").forEach(b=>confirmTap(b,async()=>{const l=(S.feriados?.lista||[]).filter(x=>x.fecha!==b.dataset.ferdel);try{await saveFer(l,"Feriado quitado",b.dataset.ferdel)}catch(e){toast("No se pudo guardar",true)}},"¿Quitar?"));
   $("#tuSave")&&($("#tuSave").onclick=async()=>{const ini=val("tu_inicio");if(!ini){$("#tuMsg").textContent="Indica el primer día de un bloque de trabajo.";return}
     const alt=val("tu_alt")==="1",pt=val("tu_primer")||"dia",hd=val("tu_hdia")||"08:00–20:00",hn=val("tu_hnoche")||"20:00–08:00";
     try{if(!guard())return;await S.db.doc("meta/turnos").set({inicio:ini,alterna:alt,primer_tipo:pt,horario_dia:hd,horario_noche:hn,horario:alt?hd+" y "+hn:(pt==="noche"?hn:hd),dias_trabajo:Math.max(1,+val("tu_trab")||7),dias_descanso:Math.max(1,+val("tu_desc")||7),lugar:val("tu_lugar")||"",actualizado:nowISO(),dispositivo:DEV()});log("Turnos configurados","Inicio "+ini+(alt?" · alterna día/noche":""));toast("Turnos guardados")}catch(e){$("#tuMsg").textContent="No se pudo guardar ("+errTxt(e)+")."}})};
@@ -957,7 +987,7 @@ async function pickPCSession(){if(!guard())return;if(!S.mcp){toast("Conectores n
   catch(e){$("#sesList").innerHTML=`<div class="cfg"><div class="h">No se pudieron leer las sesiones</div>${esc(mcpErr(e,"Claude Code Remote"))}</div>`}}
 
 /* ---------- AUTOMATIZACIONES ---------- */
-const REGLAS=[["vencidas","Aviso de tareas vencidas","Crea una notificación cuando una tarea pasa su fecha límite."],["recordatorios","Recordatorios de tareas","Avisa a la hora del recordatorio de cada tarea."],["iacc","Plazos IACC (48 h)","Avisa cuando una evaluación pendiente cierra en menos de 48 horas."],["contenido","Contenido","Avisa de videos que pasan a revisión, clips nuevos y publicaciones realizadas."],["pc","PC desconectado","Avisa si el PC deja de reportar estado por más de 15 minutos."]];
+const REGLAS=[["feriados","Feriados en turno","Avisa 3 días antes de un feriado que te toca trabajar, con las horas en feriado."],["vencidas","Aviso de tareas vencidas","Crea una notificación cuando una tarea pasa su fecha límite."],["recordatorios","Recordatorios de tareas","Avisa a la hora del recordatorio de cada tarea."],["iacc","Plazos IACC (48 h)","Avisa cuando una evaluación pendiente cierra en menos de 48 horas."],["contenido","Contenido","Avisa de videos que pasan a revisión, clips nuevos y publicaciones realizadas."],["pc","PC desconectado","Avisa si el PC deja de reportar estado por más de 15 minutos."]];
 const reglasCfg=()=>{const r=S.reglas||{};return Object.fromEntries(REGLAS.map(([k])=>[k,r[k]!==false]))};
 VIEWS.automatizaciones=()=>{const nd=needData();const R=reglasCfg();const T=S.triggers;
   return `<h1 class="vt">Automations Center</h1><p class="vs">Tareas programadas de Claude (se ejecutan en la nube aunque el celular esté apagado) y reglas internas de BWISIOM HQ.</p>${nd}
@@ -1047,6 +1077,7 @@ function mcpErr(e,srv){const c=e?.code||"upstream_error";return({needs_reauth:"R
 async function runRules(){if(!S.db||!S.canEdit||!S.lastSync)return;const R=reglasCfg(),now=Date.now();S.lastRules=nowISO();const PS=[];const P=(...a)=>{PS.push(pushNotif(...a))};
   if(R.vencidas)S.tareas.filter(tareaVencida).forEach(t=>P("venc-"+t._id+"-"+(t.fecha_limite||"").slice(0,16),"Tarea vencida",t.titulo+" · venció "+fmtF(t.fecha_limite),"vencida"));
   if(R.recordatorios)S.tareas.filter(t=>t.estado!=="completada"&&t.recordatorio&&new Date(t.recordatorio)<=now&&now-new Date(t.recordatorio)<7*864e5).forEach(t=>P("rec-"+t._id+"-"+t.recordatorio.slice(0,16),"Recordatorio",t.titulo,"recordatorio"));
+  if(R.feriados&&S.turnos?.inicio)feriadosTrabajados(dayKey(now),addDays(dayKey(now),3)).forEach(f=>P("fer-"+f.fecha,"Feriado en turno: "+f.nombre,fmtD(f.fecha+"T12:00:00")+" · "+f.horas+" h en feriado · "+f.tramos.map(tramoTxt).join(" + "),"evento"));
   if(R.iacc)S.estudios.filter(e=>["pendiente","listo"].includes(e.estado)&&new Date(e.cierre)>now&&new Date(e.cierre)-now<48*36e5).forEach(e=>P("iacc-"+e._id+"-"+e.cierre.slice(0,10),"Plazo IACC en menos de 48 h",e.asignatura+" · "+e.titulo+" · cierra "+fmtF(e.cierre),"iacc"));
   if(R.contenido){S.videos.forEach(v=>{if(v.etapa==="revision")P("rev-"+v._id,"Video listo para revisar",(v.codigo||"")+" "+v.titulo,"contenido");Object.entries(v.plataformas||{}).forEach(([p,i])=>{if(i.estado==="subido"&&i.fecha&&now-new Date(i.fecha)<3*864e5)P("pub-"+v._id+"-"+p,"Publicación realizada",(v.codigo||"")+" en "+nm(p)+" · "+(i.titulo||v.titulo),"publicacion");if(i.estado==="revision")P("vrev-"+v._id+"-"+p,"Pieza en revisión",(v.codigo||"")+" "+nm(p),"contenido")})});
     S.clips.forEach(c=>{if(c.fecha&&now-new Date(c.fecha)<3*864e5)P("clip-"+c._id,"Nuevo clip del PC",(c.titulo||c.codigo||"Clip")+(c.juego?" · "+c.juego:""),"contenido")})}
@@ -1057,7 +1088,7 @@ async function runRules(){if(!S.db||!S.canEdit||!S.lastSync)return;const R=regla
 
 /* ============ DATOS ============ */
 function setSync(c,t){$("#sync").className="sync "+c;$("#syncTxt").textContent=t}
-let rq=0;const rerender=()=>{cancelAnimationFrame(rq);rq=requestAnimationFrame(()=>{const a=document.activeElement;if(a&&a.matches("textarea,input")&&$("#view").contains(a)&&a.value){badges();return}render()})};
+let rq=0;const rerender=()=>{clearTimeout(rq);rq=setTimeout(()=>{const a=document.activeElement;if(a&&a.matches("textarea,input")&&$("#view").contains(a)&&a.value){badges();return}render()},40)};
 function hideSplash(){const s=$("#splash");if(!s||s.dataset.out)return;s.dataset.out=1;s.classList.add("out");setTimeout(()=>s.remove(),450)}
 buildNav();route();setTimeout(hideSplash,1600);
 (async()=>{const slow=setTimeout(()=>setSync("stale","Sin conexión todavía"),10000);
@@ -1076,7 +1107,7 @@ buildNav();route();setTimeout(hideSplash,1600);
   sub("notificaciones",db.collection("notificaciones").orderBy("creado","desc").limit(300));
   sub("registro",db.collection("registro").orderBy("fecha","desc").limit(150));
   const docSub=(path,key)=>db.doc(path).onSnapshot(s=>{S[key]=s.exists?s.data():null;if(!s.metadata.fromCache)live();rerender()},err);
-  docSub("meta/info","meta");docSub("meta/config","config");docSub("meta/turnos","turnos");docSub("meta/reglas","reglas");docSub("meta/pc","pcCfg");docSub("pc/estado","pcEstado");
+  docSub("meta/info","meta");docSub("meta/config","config");docSub("meta/turnos","turnos");docSub("meta/feriados","feriados");docSub("meta/reglas","reglas");docSub("meta/pc","pcCfg");docSub("pc/estado","pcEstado");
   setTimeout(runRules,8000);setInterval(runRules,60000);
   setInterval(()=>{if(S.lastSync)setSync("live","En vivo");if(["inicio","pc"].includes(S.view)&&!document.activeElement?.matches("textarea,input"))render()},60000);
 })();
