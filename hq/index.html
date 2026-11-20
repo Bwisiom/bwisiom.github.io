@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BWISIOM HQ MOBILE</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Centro de control BWISIOM HQ.">
+<meta name="theme-color" content="#08070C">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BWISIOM HQ">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#08070C;--panel:#15121E;--line:rgba(155,77,255,.28);--fg:#F6F4FC;--muted:#B9B5C9;--dim:#8A8599;--morado:#6A00FF;--lila:#D3B8FF;--warn:#FFC23D;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{background:var(--bg);color:var(--fg)}
+body{font:15px/1.5 "Barlow",system-ui,sans-serif;min-height:100vh;min-height:100dvh;display:grid;place-items:center;
+  padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));
+  background:radial-gradient(ellipse 80% 45% at 0% 0%,rgba(106,0,255,.32),transparent 70%),radial-gradient(ellipse 60% 40% at 100% 100%,rgba(155,77,255,.16),transparent 70%),var(--bg)}
+main{width:100%;max-width:440px;display:grid;justify-items:center;gap:16px;text-align:center}
+.logo{width:120px;height:120px;border-radius:50%;box-shadow:0 0 0 3px var(--morado),0 0 50px rgba(106,0,255,.8);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 3px var(--morado),0 0 80px rgba(106,0,255,.95)}}
+h1{font:400 italic 34px/1 "Anton",Impact,sans-serif;letter-spacing:3px}
+h1 b{color:#9B4DFF;font-weight:400}
+.tag{font:700 11px "Barlow";letter-spacing:.2em;color:var(--lila);border:1px solid var(--line);border-radius:5px;padding:2px 8px}
+.ld{width:160px;height:3px;border-radius:3px;background:var(--panel);overflow:hidden}
+.ld i{display:block;width:40%;height:100%;background:linear-gradient(90deg,var(--morado),#fff);animation:ld 1.1s ease-in-out infinite}
+@keyframes ld{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+#msg{color:var(--muted);min-height:1.5em}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--fg);font:700 16px "Barlow";text-decoration:none;cursor:pointer}
+.btn.pri{background:var(--morado);border-color:var(--morado);box-shadow:0 6px 24px rgba(106,0,255,.5)}
+.card{width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.card h2{font:400 italic 19px "Anton",sans-serif;letter-spacing:1px;margin-bottom:6px}
+.card ol{padding-left:20px;color:var(--muted);font-size:14px}
+.card li{margin:3px 0}
+.small{font-size:13px;color:var(--dim)}
+.off{border-color:var(--warn);color:var(--warn)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="icons/icon-512.png" alt="BWISIOM">
+  <h1>BWISIOM <b>HQ</b></h1><span class="tag">MOBILE</span>
+  <div class="ld" id="ld"><i></i></div>
+  <p id="msg">Abriendo tu centro de control…</p>
+  <a class="btn pri" id="open" href="https://claude.ai/artifact/VdJfCcvH4SEFDKABrrFVru">Abrir BWISIOM HQ</a>
+  <button class="btn" id="install" hidden>Instalar BWISIOM HQ</button>
+  <div class="card off" id="offline" hidden><h2>Sin conexión</h2><p>BWISIOM HQ necesita Internet para leer y guardar tus datos de forma segura. Vuelve a intentarlo cuando tengas señal.</p></div>
+  <div class="card" id="howto" hidden>
+    <h2 id="howT">Instálala en tu celular</h2>
+    <ol id="howA"><li>Toca <b>Instalar BWISIOM HQ</b> arriba, o el menú <b>⋮</b> de Chrome → <b>Instalar aplicación</b>.</li><li>Ábrela desde el icono de tu pantalla de inicio.</li><li>La primera vez, inicia sesión en Claude con tu cuenta.</li></ol>
+    <ol id="howI" hidden><li>Toca el botón <b>Compartir</b> de Safari (cuadro con flecha).</li><li>Elige <b>Agregar a pantalla de inicio</b> y luego <b>Agregar</b>.</li><li>Ábrela desde el icono. La primera vez, inicia sesión en claude.ai.</li></ol>
+  </div>
+  <p class="small">Tus datos viven en la base de datos privada de BWISIOM HQ en tu cuenta de Claude, la misma que usa el PC. Esta página no guarda datos.</p>
+</main>
+<script>
+(function(){
+  var APP="https://claude.ai/artifact/VdJfCcvH4SEFDKABrrFVru";
+  var $=function(s){return document.querySelector(s)};
+  var standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
+  function offline(){ $("#offline").hidden=false; $("#ld").hidden=true; $("#msg").textContent="Sin conexión a Internet."; }
+  if(!navigator.onLine){ offline(); }
+  addEventListener("offline",offline);
+  addEventListener("online",function(){ $("#offline").hidden=true; $("#msg").textContent="Conexión recuperada."; });
+  if(standalone){
+    // App instalada: abre el centro de control automáticamente una vez por sesión (evita bucles al volver atrás).
+    var first=false; try{ first=!sessionStorage.getItem("abierto"); sessionStorage.setItem("abierto","1"); }catch(e){ first=true; }
+    if(first&&navigator.onLine){ setTimeout(function(){ location.href=APP; },900); }
+    else { $("#ld").hidden=true; $("#msg").textContent="Toca para volver a tu centro de control."; }
+  } else {
+    $("#ld").hidden=true; $("#msg").textContent="Agrégala a tu pantalla de inicio para usarla como app.";
+    $("#howto").hidden=false;
+    if(ios){ $("#howA").hidden=true; $("#howI").hidden=false; $("#howT").textContent="Instálala en tu iPhone"; }
+  }
+  var deferred=null;
+  addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); deferred=e; $("#install").hidden=false; });
+  $("#install").onclick=function(){ if(!deferred)return; deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; $("#install").hidden=true; }); };
+  addEventListener("appinstalled",function(){ $("#msg").textContent="¡Instalada! Ábrela desde tu pantalla de inicio."; });
+})();
+</script>
+</body>
+</html>

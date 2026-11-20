@@ -1,0 +1,21 @@
+{
+  "id": "/hq/",
+  "name": "BWISIOM HQ MOBILE",
+  "short_name": "BWISIOM HQ",
+  "description": "Centro de control BWISIOM HQ: proyectos, contenido, tareas, calendario, automatizaciones y PC.",
+  "lang": "es-CL",
+  "start_url": "/hq/?app=1",
+  "scope": "/hq/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#08070C",
+  "theme_color": "#08070C",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

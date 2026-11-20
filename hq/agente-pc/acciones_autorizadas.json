@@ -1,0 +1,29 @@
+{
+  "_nota": "Lista blanca del agente BWISIOM. Nada se ejecuta si 'habilitada' es false. Revisa cada comando antes de habilitarlo. Los comandos son listas (sin shell) para evitar inyecciones.",
+  "procesos_vigilados": ["obs64.exe", "VALORANT.exe", "VALORANT-Win64-Shipping.exe", "Discord.exe", "steam.exe"],
+  "obs": { "host": "localhost", "port": 4455 },
+  "acciones": [
+    {
+      "id": "abrir_obs",
+      "nombre": "Abrir OBS",
+      "descripcion": "Inicia OBS Studio en segundo plano.",
+      "comando": ["C:\\Program Files\\obs-studio\\bin\\64bit\\obs64.exe"],
+      "en_segundo_plano": true,
+      "habilitada": false
+    },
+    {
+      "id": "energia_alto_rendimiento",
+      "nombre": "Plan de energía: alto rendimiento",
+      "descripcion": "Activa el plan de energía de alto rendimiento de Windows (útil antes de jugar Valorant).",
+      "comando": ["powercfg", "/setactive", "SCHEME_MIN"],
+      "habilitada": false
+    },
+    {
+      "id": "energia_equilibrado",
+      "nombre": "Plan de energía: equilibrado",
+      "descripcion": "Vuelve al plan de energía equilibrado de Windows.",
+      "comando": ["powercfg", "/setactive", "SCHEME_BALANCED"],
+      "habilitada": false
+    }
+  ]
+}
