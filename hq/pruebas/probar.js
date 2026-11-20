@@ -126,10 +126,14 @@ const shot = (p, n) => p.screenshot({ path: path.join(OUT, n + ".png"), fullPage
     ok(T + "Turnos sin configurar: aviso pendiente", await p.locator("text=Pendiente de configuración").first().isVisible());
     const d0 = new Date(Date.now() - 2 * 864e5).toISOString().slice(0, 10);
     await p.fill("#f_tu_inicio", d0); await p.click("#tuSave");
-    await p.waitForSelector("text=día 3 de 7 de trabajo");
-    ok(T + "Turnos 7x7 calculados", true);
+    await p.waitForSelector("text=Turno día · día 3 de 7 · 08:00–20:00");
+    ok(T + "Turnos 7x7 calculados (día, horario)", true);
+    ok(T + "Turnos alternan: próximo bloque es noche 20:00–08:00", await p.locator(".item", { hasText: "Entra turno noche" }).first().locator("text=20:00–08:00").isVisible());
     await p.click("[data-sub='calendario:mes']");
     ok(T + "Vista mensual con días de turno", (await p.locator(".month button.work").count()) >= 7);
+    await p.click("[data-mm='1']");
+    ok(T + "Mes siguiente marca turnos de noche", (await p.locator(".month button.work.night").count()) >= 5);
+    await p.click("[data-mm='-1']");
     await shot(p, devName + "-06-calendario");
     await p.click("#fab"); await p.fill("#f_titulo", "Evento de prueba"); await p.fill("#f_inicio", new Date(Date.now() + 864e5).toISOString().slice(0, 16)); await p.click("#eSave");
     await p.waitForTimeout(300);
@@ -215,6 +219,8 @@ const shot = (p, n) => p.screenshot({ path: path.join(OUT, n + ".png"), fullPage
     await pc.waitForSelector("#splash", { state: "detached" }); await phone.waitForSelector("#splash", { state: "detached" });
     ok("Escritorio · barra lateral visible", await pc.locator("aside.side").isVisible());
     await pc.evaluate(() => location.hash = "#/tareas");
+    await phone.waitForFunction(() => document.querySelector("#syncTxt").textContent === "En vivo");
+    await pc.waitForFunction(() => document.querySelector("#syncTxt").textContent === "En vivo");
     await phone.fill("#tIn", "Tarea desde el celular"); await phone.click("#tAdd");
     await pc.waitForSelector("text=Tarea desde el celular", { timeout: 4000 });
     ok("Sync · tarea creada en celular aparece en PC", true);
